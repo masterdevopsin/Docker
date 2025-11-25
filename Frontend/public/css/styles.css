@@ -1,0 +1,132 @@
+/* Netflix Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+body {
+    margin-left: 350px;
+    padding: 40px 0; /* add top-bottom padding */
+    font-family: "Poppins", sans-serif;
+    background: url("https://assets.nflxext.com/ffe/siteui/vlv3/b44f6f63-c8d4-4e5d-89ec-4cf0a1d57b36/35fbf795-21ba-4537-af97-2583025a3afb/IN-en-20230731-popsignuptwoweeks-perspective_alpha_website_large.jpg");
+    background-size: cover;
+    background-position: center;
+    overflow-y: auto; /* allow scrolling */
+}
+
+/* Glass Netflix Container */
+.container {
+    width: 650px;
+    padding: 40px;
+    background: rgba(20, 20, 20, 0.82);
+    border-radius: 14px;
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    box-shadow: 0px 10px 45px rgba(0,0,0,0.75);
+    text-align: center;
+    animation: fadeIn 1s ease;
+}
+
+/* Title */
+.title {
+    color: #ffffff;
+    font-size: 32px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+/* Subtitle */
+.subtitle {
+    color: #bbbbbb;
+    font-size: 15px;
+    margin-bottom: 25px;
+}
+
+/* Netflix Red Button */
+.netflix-btn {
+    background: #e50914;
+    color: white;
+    font-size: 17px;
+    font-weight: 500;
+    padding: 12px 34px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+    letter-spacing: 0.4px;
+    box-shadow: 0 6px 20px rgba(229, 9, 20, 0.55);
+}
+
+.netflix-btn:hover {
+    background: #f6121d;
+    transform: scale(1.05);
+}
+
+/* Glass Table Container */
+.glass-table {
+    margin-top: 25px;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.15);
+    overflow: hidden;
+}
+
+/* Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 16px;
+}
+
+/* Header */
+thead {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+thead th {
+    padding: 14px;
+    color: #ffffff;
+    font-weight: 600;
+    text-align: left;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+}
+
+/* Table Rows */
+tbody td {
+    padding: 14px;
+    font-size: 15px;
+    color: #ffffff !important;
+    font-weight: 400;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+}
+
+/* Alternate row effect */
+tbody tr:nth-child(even) {
+    background: rgba(255,255,255,0.06);
+}
+
+/* Hover effect */
+tbody tr:hover {
+    background: rgba(229, 9, 20, 0.25);
+    transition: 0.2s;
+}
+
+/* Row Fade Animation */
+.fade {
+    animation: rowFade 0.5s ease;
+}
+
+@keyframes rowFade {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Container Fade */
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Force table text visible */
+#namesList td {
+    color: white !important;
+}

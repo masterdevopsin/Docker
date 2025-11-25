@@ -1,0 +1,90 @@
+0 verbose cli /usr/bin/node /usr/bin/npm
+1 info using npm@10.8.2
+2 info using node@v20.19.5
+3 silly config load:file:/usr/lib/node_modules/npm/npmrc
+4 silly config load:file:/root/Frontend/.npmrc
+5 silly config load:file:/root/.npmrc
+6 silly config load:file:/usr/etc/npmrc
+7 verbose title npm install
+8 verbose argv "install"
+9 verbose logfile logs-max:10 dir:/root/.npm/_logs/2025-11-24T09_17_39_187Z-
+10 verbose logfile /root/.npm/_logs/2025-11-24T09_17_39_187Z-debug-0.log
+11 silly packumentCache heap:514588672 maxSize:128647168 maxEntrySize:64323584
+12 silly logfile done cleaning log files
+13 silly idealTree buildDeps
+14 silly reify moves {}
+15 silly audit bulk request {
+15 silly audit   accepts: [ '2.0.0' ],
+15 silly audit   'body-parser': [ '2.2.0' ],
+15 silly audit   bytes: [ '3.1.2' ],
+15 silly audit   'call-bind-apply-helpers': [ '1.0.2' ],
+15 silly audit   'call-bound': [ '1.0.4' ],
+15 silly audit   'content-disposition': [ '1.0.1' ],
+15 silly audit   'content-type': [ '1.0.5' ],
+15 silly audit   cookie: [ '0.7.2' ],
+15 silly audit   'cookie-signature': [ '1.2.2' ],
+15 silly audit   debug: [ '4.4.3' ],
+15 silly audit   depd: [ '2.0.0' ],
+15 silly audit   'dunder-proto': [ '1.0.1' ],
+15 silly audit   'ee-first': [ '1.1.1' ],
+15 silly audit   encodeurl: [ '2.0.0' ],
+15 silly audit   'es-define-property': [ '1.0.1' ],
+15 silly audit   'es-errors': [ '1.3.0' ],
+15 silly audit   'es-object-atoms': [ '1.1.1' ],
+15 silly audit   'escape-html': [ '1.0.3' ],
+15 silly audit   etag: [ '1.8.1' ],
+15 silly audit   express: [ '5.1.0' ],
+15 silly audit   finalhandler: [ '2.1.0' ],
+15 silly audit   forwarded: [ '0.2.0' ],
+15 silly audit   fresh: [ '2.0.0' ],
+15 silly audit   'function-bind': [ '1.1.2' ],
+15 silly audit   'get-intrinsic': [ '1.3.0' ],
+15 silly audit   'get-proto': [ '1.0.1' ],
+15 silly audit   gopd: [ '1.2.0' ],
+15 silly audit   'has-symbols': [ '1.1.0' ],
+15 silly audit   hasown: [ '2.0.2' ],
+15 silly audit   'http-errors': [ '2.0.1' ],
+15 silly audit   'iconv-lite': [ '0.6.3', '0.7.0' ],
+15 silly audit   inherits: [ '2.0.4' ],
+15 silly audit   'ipaddr.js': [ '1.9.1' ],
+15 silly audit   'is-promise': [ '4.0.0' ],
+15 silly audit   'math-intrinsics': [ '1.1.0' ],
+15 silly audit   'media-typer': [ '1.1.0' ],
+15 silly audit   'merge-descriptors': [ '2.0.0' ],
+15 silly audit   'mime-db': [ '1.54.0' ],
+15 silly audit   'mime-types': [ '3.0.2' ],
+15 silly audit   ms: [ '2.1.3' ],
+15 silly audit   negotiator: [ '1.0.0' ],
+15 silly audit   'object-inspect': [ '1.13.4' ],
+15 silly audit   'on-finished': [ '2.4.1' ],
+15 silly audit   once: [ '1.4.0' ],
+15 silly audit   parseurl: [ '1.3.3' ],
+15 silly audit   'path-to-regexp': [ '8.3.0' ],
+15 silly audit   'proxy-addr': [ '2.0.7' ],
+15 silly audit   qs: [ '6.14.0' ],
+15 silly audit   'range-parser': [ '1.2.1' ],
+15 silly audit   'raw-body': [ '3.0.2' ],
+15 silly audit   router: [ '2.2.0' ],
+15 silly audit   'safer-buffer': [ '2.1.2' ],
+15 silly audit   send: [ '1.2.0' ],
+15 silly audit   'serve-static': [ '2.2.0' ],
+15 silly audit   setprototypeof: [ '1.2.0' ],
+15 silly audit   'side-channel': [ '1.1.0' ],
+15 silly audit   'side-channel-list': [ '1.0.0' ],
+15 silly audit   'side-channel-map': [ '1.0.1' ],
+15 silly audit   'side-channel-weakmap': [ '1.0.2' ],
+15 silly audit   statuses: [ '2.0.2' ],
+15 silly audit   toidentifier: [ '1.0.1' ],
+15 silly audit   'type-is': [ '2.0.1' ],
+15 silly audit   unpipe: [ '1.0.0' ],
+15 silly audit   vary: [ '1.1.2' ],
+15 silly audit   wrappy: [ '1.0.2' ]
+15 silly audit }
+16 http fetch POST 200 https://registry.npmjs.org/-/npm/v1/security/advisories/bulk 414ms
+17 silly audit report {}
+18 verbose cwd /root/Frontend
+19 verbose os Linux 6.8.0-1040-aws
+20 verbose node v20.19.5
+21 verbose npm  v10.8.2
+22 verbose exit 0
+23 info ok
