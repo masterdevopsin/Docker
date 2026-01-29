@@ -1,0 +1,1003 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang2057{\fonttbl{\f0\fnil Arial;}{\f1\fnil\fcharset0 Arial;}{\f2\fnil\fcharset0 Calibri;}{\f3\fnil\fcharset1 Cambria Math;}{\f4\fnil\fcharset0 Cambria Math;}{\f5\fnil Cambria Math;}}
+{\colortbl ;\red255\green255\blue0;\red255\green0\blue0;\red0\green128\blue0;\red0\green0\blue0;\red0\green0\blue255;\red255\green255\blue255;}
+{\*\generator Riched20 10.0.26100}{\*\mmathPr\mmathFont3\mwrapIndent1440 }\viewkind4\paperw11906\paperh16838\psz9
+{\*\jarte object RichPersist
+  Version = 2
+  LMarg = 1440
+  RMarg = 1440
+  TMarg = 1440
+  BMarg = 1440
+  Equal = True
+  Orient = 1
+  Size = 9
+  Width = 2100
+  Height = 2970
+  LHdr = '$3B'
+  MHdr = '$3B'
+  RHdr = '$3B'
+  LFtr = '$3B'
+  MFtr = '$3B'
+  RFtr = '$3B'
+  PrtHdr = True
+  PrtFtr = True
+  HdrMarg = 1440
+  FtrMarg = 1440
+  HdrFont.Charset = DEFAULT_CHARSET
+  HdrFont.Color = clWindowText
+  HdrFont.Height = -11
+  HdrFont.Name = 'MS Sans Serif'
+  HdrFont.Style = []
+  Wrap = 2
+  WMark = 'None'
+  WColor = 13822463
+  SpellDict = 'sscebr2.clx'
+end
+}\uc1 
+\pard\f0\fs28\lang16393 Core Concepts:\par
+\par
+\f1 How Kubernetes achieve orchestration?\par
+\tab By objects . Kubernetes objects are persistent entities that represent the desired state of your cluster.They tell Kubernetes:\par
+\tab\tab What to run\par
+\tab\tab How to run it\par
+\tab\tab How many\par
+\tab\tab How it should be exposed\par
+\tab\tab What resources it can use\par
+\f0\par
+\highlight1\b What is kubectl?\highlight0\b0\par
+\f1\tab Kubectl allows you to create, update, delete, and get information about resources in the cluster, like Pods, Deployments, Services, ConfigMaps, etc.kubectl is the command-line interface (CLI) tool used to interact with a Kubernetes cluster.\par
+\tab\f0\par
+\par
+\highlight1\b 1. Pod:\highlight0\b0\par
+\par
+\cf2\b What is a Pod in Kubernetes?\cf0\b0\par
+\tab A Pod is the smallest, simplest deployable unit in Kubernetes. It represents a single instance of a running process in your cluster. Pods are the unit of scaling and deployment\par
+\par
+ \cf2\b Why Use a Pod Instead of a Container Directly?\b0\par
+\cf0\tab Containers in a Pod are tightly coupled and designed to work together.\par
+\tab Example: A web server + a helper container that updates content \emdash  both in the same pod.\par
+\tab Pods provide:\par
+\tab\tab Shared storage\par
+\tab\tab Shared network\par
+\cf2\b Pod Networking:\cf0\b0\par
+\tab Each Pod gets a unique IP address in the cluster.\par
+\tab All containers inside a Pod share the same network namespace:\par
+\tab\tab Same IP\par
+\tab\tab Same port space\par
+\cf2\b Types of Pods:\cf0\b0\par
+\tab Single-Container Pod\par
+\tab Multi-Container Pod\par
+\par
+\cf2\b Single-Container Pod:\cf0\b0\par
+\tab Most common\par
+\tab Runs one application per Pod\par
+\cf2\b Multi-Container Pod\cf0\b0\par
+\tab Containers are tightly coupled.\par
+\tab Not commonly used\par
+\par
+--------------------------------------------------------\par
+---> sudo systemctl restart kubelet\par
+---> touch pod.yml\par
+---> nano pod.yml\par
+\cf2\b We create a pod by writing the specifications in yaml file \cf0\b0\par
+\highlight1 Example 1:\highlight0\par
+\f1          ---\f0\par
+\tab apiVersion: v1\par
+\tab kind: Pod\par
+\tab metadata:\par
+\tab   name: mypod\par
+\tab spec:\par
+\tab   containers:\par
+\tab   - name: nginx-container\par
+\tab     image: nginx\par
+\tab     ports:\par
+\tab     - containerPort: 80\par
+--------------------------------------------------------\par
+---> kubectl get nodes \par
+---> kubectl get pods\par
+---> kubectl create -f pod.yaml \par
+---> kubectl get pods\par
+---> kubectl get pods -o wide\par
+go to worker nodes and execute \par
+---> crictl ps\par
+\f1 go to control plane and execute\f0\page ---> kubectl describe pod <pod-name>\par
+---> kubectl delete pod <pod-name>\par
+--------------------------------------------------------\par
+---> kubectl api-resources \par
+\tab This lists all available resources, their short names, API groups etc...  0r\par
+---> kubectl explain pod   [or]   kubectl api-versions\par
+---> sudo systemctl restart kubelet\par
+--------------------------------------------------------\par
+Open browser --- public-ip:80\par
+\tab  Just creating a Pod with that YAML won't expose nginx to your browser directly, because:\par
+\tab A Pod is accessible only inside the cluster by default.\par
+\tab There is no external IP or port mapping defined yet.\par
+--------------------------------------------------------\par
+\highlight1\b Example 2:\highlight0\b0\par
+---> touch pod1.yml\par
+---> nano pod1.yml\par
+
+\pard\sa200\sl276\slmult1\f1\lang9\tab kind: Pod\par
+\tab apiVersion: v1\par
+\tab metadata:\par
+\tab\tab name:  sample-pod\par
+\tab\tab labels: \lang16393  \f0\lang9\par
+\tab\tab\tab zone:  prod\par
+\tab spec:\par
+\tab\tab containers:\par
+\tab\tab - name:  sample-pod\par
+\tab\tab    image:   devopstrainer/deploy:v1\par
+\tab\tab    ports:\par
+\tab\tab   -   containerPort:   80\par
+\f1\lang16393 -------------------------------------------------------------------------\lang9\par
+\lang16393 ---> kubectl create -f <pod-name>\par
+\lang9 ---> kubectl get pods\par
+---> kubectl get pods -o wide\par
+go to node and execute \par
+---> sudo crictl ps\par
+
+\pard\lang16393 ---> kubectl describe pod <pod-name>\par
+---> \f0 kubectl \f1 apply\f0  -f <pod-name>\par
+---> kubectl delete pod <pod-name>\par
+
+\pard\sa200\sl276\slmult1 -------------------------------------------------------------------------\par
+\cf3\highlight3\f1 ------------------------------------------------------------------------------------------------\cf0\highlight1\par
+\f0\par
+\cf4\b\f1 2. \f0\lang9 ReplicaSet \cf0\highlight0\b0\f1\lang16393\par
+\cf2\lang9 What is a ReplicaSet in Kubernetes?\par
+\cf4\tab A ReplicaSet is a Kubernetes controller that ensures a specified number of identical Pods are running at all times.\cf2\par
+Purpose:\par
+\tab\cf4 To maintain high availability by making sure the desired number of Pod replicas are always available, even if some Pods crash or nodes fail.\par
+\cf2 Why ReplicaSet is Needed:\par
+\tab\cf4 If a Pod crashes or gets deleted, ReplicaSet will automatically create a \tab new Pod to replace it.\par
+\tab If more replicas are needed, you can scale up by increasing the replicas \tab count.\par
+\tab Helps achieve self-healing, fault tolerance, and load balancing.\par
+\cf2 Key Features of ReplicaSet\par
+\tab\cf4 Maintains the desired number of replicas.\par
+\tab Uses labels and selectors to manage the Pods.\par
+\tab Automatically replaces failed or deleted Pods.\par
+\tab Supports horizontal scaling (increase/decrease number of Pods).\par
+\cf2 ReplicaSet Example YAML\par
+\cf4 apiVersion: apps/v1\par
+kind: ReplicaSet\par
+metadata:\par
+  name: nginx-replicaset\par
+  labels:\par
+    app: nginx\par
+spec:\par
+  replicas: 3\par
+  selector:\par
+    matchLabels:\par
+      app: nginx\par
+  template:\par
+    metadata:\par
+      labels:\par
+        app: nginx\par
+    spec:\par
+      containers:\par
+      - name: nginx-container\par
+        image: nginx:latest\par
+        ports:\par
+        - containerPort: 80\par
+\cf2\par
+replicas: \cf4 Desired number of Pods (3 here).\cf2\par
+selector: \cf4 Finds Pods with app: nginx label.\cf2\par
+template: \cf4 Defines the Pod spec that the ReplicaSet should create.\cf2\par
+\par
+\cf4 ---> kubectl get rs \par
+---> kubectl get pods  \par
+---> kubectl create -f <filename>\par
+---> kubectl describe rs <name>\par
+---> kubectl scale rs <name> --replicas=5\par
+---> kubectl delete rs <name>\par
+\cf2 ReplicaSet vs Pod\par
+Pod\par
+\cf4\tab Runs a single instance of an application\par
+\tab Not self-healing\par
+\tab Manual creation needed\par
+\cf2 ReplicaSet \par
+\tab\cf4 Ensures multiple copies of a Pod run\par
+\tab Self-healing; recreates if Pods fail\par
+\tab Automatically manages Pods\par
+\cf2 Note:\par
+\cf4\tab In practice, ReplicaSet is rarely created directly. Instead, we use Deployments, which internally use ReplicaSets for managing Pods, but also provide rolling updates, rollbacks, etc.\par
+\tab Deployment > ReplicaSet > Pod\par
+\cf0\lang16393 -------------------------------------------------------------------------\par
+\cf3\highlight3 ------------------------------------------------------------------------------------------------\cf0\highlight0\f0\par
+\par
+\highlight1\b\f1 3. \f0 Deployments \highlight0\b0\par
+\cf2\f1\lang9 What is a Deployment in Kubernetes?\par
+\tab\cf4 A Deployment in Kubernetes is a higher-level abstraction that:\par
+\tab\tab Manages ReplicaSets, which in turn manage Pods.\par
+\tab\tab Provides declarative updates \lang16393 to pods and rs.\par
+\f0\lang9\tab\tab Supports rolling updates, rollbacks, and version control for \f1\lang16393\tab\tab\f0\lang9 Pods.\par
+\cf2 Deployment Hierarchy\cf4 :\par
+\tab Deployment \f1\lang16393 ---->\f0\lang9  ReplicaSet \f1\lang16393 ---->\f0\lang9  Pod \f1\lang16393 ---->\f0\lang9  Containers\par
+\cf2 Why Use Deployment Instead of ReplicaSet Directly?\cf4\par
+\tab Easier version control and updates.\par
+\f1\lang16393\tab Simplifies scaling, updating, and managing applications.\par
+\tab You don't need to manually manage ReplicaSets or Pods.\par
+\tab Ensures high availability during updates.\par
+\cf2\f0\lang9 Deployment Example YAML\f1\lang16393 :\par
+\cf4 apiVersion: apps/v1\par
+kind: Deployment\par
+metadata:\par
+  name: nginx-deployment\par
+  labels:\par
+    app: nginx\par
+spec:\par
+  replicas: 3\par
+  selector:\par
+    matchLabels:\par
+      app: nginx\par
+  template:\par
+    metadata:\par
+      labels:\par
+        app: nginx\par
+    spec:\par
+      containers:\par
+      - name: nginx-container\par
+        image: nginx:latest\par
+        ports:\par
+        - containerPort: 80\par
+--------------------------------------------------------------------\par
+kubectl create -f deployment.yaml\par
+kubectl get deployments\par
+kubectl get rs\par
+kubectl get pods\par
+kubectl describe deployment <deployment-name>\par
+----------------------------------------------------------------------\par
+\cf2\f0\lang9 Scaling a Deployment\f1\lang16393 :\par
+\cf4 Increase or decrease the number of replicas:\par
+\tab kubectl scale deployment nginx-deployment --replicas=5\par
+----------------------------------------------------------------------\par
+\cf2\f0\lang9 Rolling Updates\f1\lang16393 :\par
+\cf4 Update Deployment without downtime:\par
+1. Edit YAML to change the image version.\par
+2. Apply the new YAML:\par
+\tab kubectl apply -f deployment.yaml\par
+\tab change image as \line\tab\cf0\f2\lang9 devopstrainer/deploy:v1\line\tab devopstrainer/deploy:v2\par
+\cf4\f1\lang16393\tab\tab or\par
+\tab kubectl set image deployment/deployment-name\par
+         containername=nginx:1.25=6\par
+3. Check rollout status:\par
+\tab kubectl rollout status deployment nginx-deployment\par
+----------------------------------------------------------------------\par
+\cf2\f0\lang9  Rollback Deployment\f1\lang16393 :\par
+\cf4 If the new version fails, rollback:\par
+\tab kubectl rollout undo deployment nginx-deployment\par
+----------------------------------------------------------------------\par
+\cf2\f0\lang9  Check Deployment History\f1\lang16393 :\par
+\cf4\tab kubectl rollout history deployment nginx-deployment\cf2\par
+\cf4 ----------------------------------------------------------------------\par
+\cf2\f0\lang9 Delete a Deployment\f1\lang16393 :\par
+\cf4\tab kubectl delete deployment nginx-deployment\cf2\par
+\cf4 ----------------------------------------------------------------------\par
+\par
+kubectl scale deployment <deployment-name> --replicas=5\par
+kubectl delete deployment <deployment-name>\par
+kubectl rollout status deployment <deployment-name>\par
+\cf3 [ if pods are updating to new version , this command  helps you track if the rollout has completed successfully or is still in progress.]\par
+\cf4 kubectl rollout history deployment <deployment-name>\par
+\cf3 [Shows the history of revisions for a Deployment \f0\emdash  including changes like updated container images or configuration.Useful for tracking previous versions in case you need to rollback.\f1 ]\cf4\par
+kubectl rollout undo deployment <deployment-name>\par
+\cf3 [Rolls back the Deployment to the previous revision/version.]\par
+\cf4 --------------------------------------------------------------------\par
+\cf3\highlight3 ------------------------------------------------------------------------------------------------\cf4\highlight0\par
+\cf0\f0\par
+\highlight1\b\f1 4. \f0 Service \highlight0\b0\par
+\cf2\b\f1 What is Service in Kubernetes?\cf4\b0\par
+\tab In Kubernetes, a Service is a resource that provides a stable network endpoint to access Pods.\par
+\cf2\b Why Services?\cf4\b0\par
+\tab Pods are ephemeral \f0\emdash  they can be terminated, recreated, and get new IPs.\par
+A Service uses labels and selectors to dynamically route traffic to matching Pods.\par
+ Services provide a permanent DNS name and stable IP to access them consistently.\par
+\cf2\b Features of Kubernetes Services\cf4\b0\par
+\f1\tab Stable IP and DNS name: Independent of the changing Pods \tab underneath.\tab\par
+\tab Load Balancing: Distributes traffic across multiple Pods\par
+\cf3\b Service Types\cf4\b0\par
+\tab\cf2\b Type\cf4\b0\tab\tab\tab\tab -- \cf2\b Scope\cf4\b0\par
+\tab ClusterIP\tab\tab\tab -- Internal cluster only\par
+\tab NodePort\tab\tab\tab -- Accessible externally via NodeIP:Port\par
+\tab LoadBalancer\tab\tab -- Public IP via cloud provider\par
+\tab\par
+\cf2 ClusterIP\cf4 :\par
+\tab ClusterIP is the default service type in Kubernetes that exposes a \tab Service only inside the cluster (internal communication only).\par
+\tab It provides an internal stable IP address that other Pods within the \tab cluster can use to access the Service\par
+Example \par
+\tab Suppose you have A backend API Service that should only be accessed by frontend Pods \f0\emdash  not from the outside world\f1  , you will define it as \par
+-----------------------------------------\par
+apiVersion: v1\par
+kind: Service\par
+metadata:\par
+  name: backend-service\par
+spec:\par
+  type: ClusterIP\par
+  selector:\par
+    app: backend\par
+  ports:\par
+    - protocol: TCP\par
+      port: 80\par
+      targetPort: 80\par
+---> kubectl create -f <file name>\par
+---> kubectl get service <service-name>\par
+---------------------------------------------------\par
+\cf2 NodePort\cf4 :\par
+\tab Opens a static port (30000-32767) on every cluster node.\par
+\tab Accessible via NodeIP:NodePort.\par
+Example:\par
+------------------------------------------------\par
+apiVersion: v1\par
+kind: Service\par
+metadata:\par
+  name: my-service\par
+spec:\par
+  type: NodePort\par
+  selector:\par
+    app: myapp\par
+  ports:\par
+    - protocol: TCP\par
+      port: 80\par
+      targetPort: 80\par
+      nodePort: 30036\f0\par
+\f1 ---> kubectl create -f <file name>\par
+---> kubectl get service <service-name>\par
+---> {\cf0{\field{\*\fldinst{HYPERLINK http://node-public-ip:30036 }}{\fldrslt{http://node-public-ip:30036\ul0\cf0}}}}\f1\fs28\par
+---------------------------------------------------\page  3. \cf2 LoadBalancer\cf4\par
+\tab Provisioned by Cloud Providers.\par
+\tab Assigns an external IP or DNS.\par
+\tab Best for production applications exposed to the internet.\par
+Example:\par
+---------------------------------------------------\par
+apiVersion: v1\par
+kind: Service\par
+metadata:\par
+  name: my-service\par
+spec:\par
+  type: LoadBalancer\par
+  selector:\par
+    app: myapp\par
+  ports:\par
+    - protocol: TCP\par
+      port: 80\par
+      targetPort: 80\par
+Note:\par
+\tab Cloud provider provisions an external IP automatically.\par
+-------------------------------------------------------------\tab\par
+Example:\par
+---> nano nginx-deployment.yaml\par
+apiVersion: apps/v1\par
+kind: Deployment\par
+metadata:\par
+  name: nginx-deployment\par
+  labels:\par
+\tab app: myapp\par
+spec:\par
+  replicas: 2\par
+  selector:\par
+    matchLabels:\par
+      app: myapp\par
+  template:\par
+    metadata:\par
+      labels:\par
+        app: myapp\par
+    spec:\par
+      containers:\par
+      - name: nginx\par
+        image: nginx:latest\par
+        ports:\par
+        - containerPort: 80\par
+---> nano nginx-loadbalancer-service.yaml\par
+------------------------------------------------------------\par
+apiVersion: v1\par
+kind: Service\par
+metadata:\par
+  name: my-service\par
+spec:\par
+  type: LoadBalancer\par
+  selector:\par
+    app: myapp\par
+  ports:\par
+  - protocol: TCP\par
+    port: 80\par
+    targetPort: 80\par
+---> kubectl apply -f nginx-deployment.yaml\par
+---> kubectl apply -f nginx-loadbalancer-service.yaml\line ---> kubectl get deployments\par
+---> kubectl get pods -o wide\par
+---> kubectl get svc\par
+-----------------------------------------------------------------------------------------\par
+If you're running Kubernetes on normal AWS EC2 instances (self-managed cluster) \f0\emdash  not EKS \emdash  the LoadBalancer service type won't work automatically because:\par
+\par
+Kubernetes LoadBalancer services rely on cloud provider integrations, like the AWS cloud controller manager, to provision AWS Elastic Load Balancers (ELBs) \emdash  which isn't configured in a self-managed cluster by default.\par
+\f1 ---------------------------------------------------\par
+\cf3\highlight3 ------------------------------------------------------------------------------------------------\cf4\highlight0\par
+\par
+\cf0\highlight1\b 4. Namespace\f0  \highlight0\b0\par
+\cf2\b\f1 What is Namespace in Kubernetes?\cf4\b0\par
+\tab A Namespace in Kubernetes is a way to logically partition or isolate resources within a single Kubernetes cluster.\par
+A namespace is like a folder inside your Kubernetes cluster.\par
+Inside this folder, you can keep:\par
+Pods\par
+Services\par
+Deployments\par
+ConfigMaps\par
+Secrets\par
+PVCs\par
+etc.\par
+Even though everything is running in one cluster, namespaces logically separate the resources.\par
+\cf2\b Why namespace\cf4\b0\par
+1. Separation of environments\par
+
+\pard\li720\sa200\sl276\slmult1 You can run different environments inside one cluster:\par
+dev\par
+stage\par
+prod\par
+Each environment gets its own namespace.\par
+
+\pard\sa200\sl276\slmult1 2. Avoid name conflicts\par
+
+\pard\li720\sa200\sl276\slmult1 You can have two Deployments with the same name in different namespaces:\par
+namespace: dev \f3\u8594?\f1  deployment name: frontend\par
+namespace: prod \f3\u8594?\f1  deployment name: frontend\cf2\b\lang16393\par
+
+\pard\sa200\sl276\slmult1 Default Behavior\cf4\b0\par
+\tab If you don't specify a namespace, resources are created in the \tab default namespace.\par
+-------------------------------------------\par
+\cf2\b How to Create a Namespace:\cf4\b0\par
+---> nano namespace.yml\par
+apiVersion: v1\par
+kind: Namespace\par
+metadata:\par
+  name: dev-team\par
+---> kubectl create -f namespace.yaml\par
+---> kubectl get namespaces\tab\tab\par
+----------------------------------------------\par
+\cf2\b Creating Resources in a Namespace\cf4\b0\par
+---> nano nginx-deployment.yaml\par
+\f0 apiVersion: apps/v1\par
+kind: Deployment\par
+metadata:\par
+  name: nginx-deployment\par
+  namespace: dev-team\par
+spec:\par
+  replicas: 2\par
+  selector:\par
+    matchLabels:\par
+      app: myapp\par
+  template:\par
+    metadata:\par
+      labels:\par
+        app: myapp\par
+    spec:\par
+      containers:\par
+      - name: nginx\par
+        image: nginx:latest\par
+        ports:\par
+        - containerPort: 80\par
+\f1\par
+---> kubectl create -f nginx-deployment.yaml\par
+----------------------------------------------------------\par
+---> nano nginx-service.yaml\par
+apiVersion: v1\par
+kind: Service\par
+metadata:\par
+  name: nginx-service\par
+  namespace: dev-team\par
+spec:\par
+  type: NodePort\par
+  selector:\par
+    app: myapp\par
+  ports:\par
+    - protocol: TCP\par
+      port: 80\par
+      targetPort: 80\par
+      nodePort: 30036\par
+\par
+---> kubectl apply -f nginx-service.yaml\par
+----------------------------------------------------\par
+Create the namespace if not exists:\par
+---> kubectl create namespace dev-team\par
+---------------------------------------------\par
+---> kubectl get deployments\par
+---> kubectl get pods\par
+---> kubectl get deployments -n dev-team\par
+---> kubectl get pods -n dev-team\par
+---> kubectl get svc -n dev-team\par
+Get All Resources in Namespace\par
+---> kubectl get all -n dev-team\par
+---------------------------------------------\par
+\cf2\b Access the Application:\cf4\b0\par
+{\cf0{\field{\*\fldinst{HYPERLINK http://<Worker-Node-Public-IP>:30036 }}{\fldrslt{http://<Worker-Node-Public-IP>:30036\ul0\cf0}}}}\f1\fs28\par
+------------------------------------------\par
+\cf2\b To Delete a Namespace :\cf4\b0\par
+---> kubectl delete namespace dev-team\par
+This will delete the namespace AND all resources (Deployments, Pods, Services, etc.) created in it.\par
+This action is irreversible.\par
+----------------------------------------------\par
+\cf2\b Verify Deletion\par
+\cf4\b0 ----> kubectl get namespaces\par
+-----------------------------------------\par
+\cf2\b Move resources b/w namespaces:\cf4\b0\par
+\tab There is no direct command to "move" resources between \tab namespaces, but you can do it by:\par
+1. Remove the namespace field under metadata.\par
+2. metadata:\par
+  namespace: default\par
+---> kubectl apply -f nginx-deployment.yaml\par
+---> kubectl apply -f nginx-service.yaml\par
+---> kubectl get deployments\par
+---> kubectl get services\par
+---> kubectl get all\par
+-----------------------------------------\par
+\cf2\b Optionally Delete Resources from Old Namespace:\cf4\b0\par
+---> kubectl delete deployment nginx-deployment -n dev-team\par
+---> kubectl delete service nginx-service -n dev-team\par
+---> kubectl get all -n dev-team\par
+---------------------------------------\par
+\cf3\highlight3 ------------------------------------------------------------------------------------------------\cf4\highlight0\par
+\par
+\cf0\highlight1\b 5. Volumes \highlight0\b0\f0\par
+\cf2\b\f1 What is Volumes in Kubernetes?\cf4\b0\par
+\tab A Volume in Kubernetes is a storage resource that is mounted inside a Pod to persist or share data among containers. Volumes solve the problem of ephemeral container storage by providing a dedicated space that can survive container restarts.\par
+\cf2 Why Volumes are Needed?\cf4\par
+\tab By default, containers use a writable layer in their filesystem.\par
+\tab Data written here is lost when:\par
+\tab\tab The container restarts.\par
+\tab\tab The Pod is deleted.\par
+\tab To persist data, share data between containers, or maintain state across restarts, Kubernetes uses Volumes.\par
+\cf2 Where is Data Stored if No Volume is Defined?\cf4\par
+Stored in the container\rquote s writable layer inside the container filesystem.\par
+Physically, it is located on the Node's local disk, managed by the container runtime, e.g.:\par
+\tab Docker: /var/lib/docker/containers/<container-id>/\par
+\tab Containerd: /var/lib/containerd/\par
+Limitations:\par
+\tab Data is lost if the Pod is deleted.\par
+\tab Node crashes or reboots may clean up the storage.\par
+\tab Data cannot be shared between containers in different Pods.\cf2\par
+Container filesystem vs Volume:\cf4\par
+ Without Volumes  => Data lost on container restart\par
+ With Volumes => Data survives container restart within the Pod, can be shared, and can be made persistent with PVC+PV\par
+---------------------------------\par
+\cf2 Types of volumes:\cf4\par
+1. emptyDir: \{\}\par
+2. hostpath\par
+-------------------------------------------------------\par
+\cf2\b 0. Default Volume:\cf4\b0\par
+\tab Every container in Kubernetes has a writable layer called the \tab root filesystem:\par
+\tab Created automatically when the container starts.\par
+\tab Ephemeral: Data is lost if the container is deleted.\par
+\tab Tied to the container, not the Pod as a whole.\par
+\tab Cannot be shared between containers in the same Pod.\par
+\tab Used for storing temporary data inside the container only.\par
+Key point: This is not defined in the Pod spec, it\rquote s the container\rquote s internal filesystem.\par
+\cf2\b 1. emptyDir: \{\}\par
+\cf0\b0 emptyDir is a Pod-scoped volume:\cf2\b\par
+\cf0\b0\tab Created when a Pod is assigned to a Node.\par
+\tab Data persists as long as the Pod exists.\par
+\tab Deleted when the Pod is deleted.\par
+\tab Shared between containers in the same Pod.\par
+\cf2\b Exampleof volume\cf4\b0 :\par
+apiVersion: v1\par
+kind: Pod\par
+metadata:\par
+  name: volume-example\par
+spec:\par
+  containers:\par
+  - name: busybox-container\par
+    image: busybox\par
+    command: ["/bin/sh", "-c", "echo 'Hello from Volume!' > /data/message && sleep 3600"]\par
+    volumeMounts:\par
+    - name: demo-volume\par
+      mountPath: /data\par
+  volumes:\par
+  - name: demo-volume\par
+    emptyDir: \{\}\par
+--------------------------------------\par
+volumeMounts mounts the emptyDir volume into /data.\par
+Any container in this Pod could also mount /data and share the same data.\par
+When the Pod is deleted, the emptyDir and its data are removed automatically.\par
+-----------------------------------\par
+---> kubectl create -f emptydir.yml\par
+To check data within container:\par
+---> kubectl get pod volume-example -o yaml\par
+or\par
+---> kubectl exec -it volume-example -- sh\par
+---> ls -l /data\par
+--->cat /data/message\par
+The ls -l /data inside the container shows files written to emptyDir.\par
+To inspect the Pod\rquote s volume on the Node\par
+---> /var/lib/kubelet/pods/<pod-uid>/volumes/kubernetes.io~empty-dir/demo-volume\par
+---------------------------------\par
+\par
+\par
+\cf2\b 2. hostPath:\cf4\b0\par
+It mounts a directory from the Node\rquote s filesystem into a Pod.\par
+The data on the host node does NOT get deleted when the Pod dies.\par
+Only the mount reference in the Pod is removed when the Pod is deleted.\par
+So the data itself persists on the Node, unlike emptyDir.-----------------------------------------------------------------\par
+\cf2\b Example\cf4\b0 :\par
+apiVersion: v1\par
+kind: Pod\par
+metadata:\par
+  name: hostpath-example\par
+spec:\par
+  containers:\par
+  - name: busybox-container\par
+    image: busybox\par
+    command: ["/bin/sh", "-c", "echo 'Hello from HostPath Volume!' > /data/message && sleep 3600"]\par
+    volumeMounts:\par
+    - name: demo-volume\par
+      mountPath: /data\par
+  volumes:\par
+  - name: demo-volume\par
+    hostPath:\par
+      path: /tmp/hostpath-demo\par
+      type: DirectoryOrCreate\par
+-----------------------------\par
+---> kubectl create -f hostpath.yml\par
+-----------------------------\par
+Explanation:\par
+hostPath.path: /tmp/hostpath-demo:\par
+This is a directory on the node machine. If it does not exist, it will be created (DirectoryOrCreate).\par
+Whatever is written to /data inside the container, is actually stored in /tmp/hostpath-demo on the host machine (node).\par
+--------------------------\par
+You can check host node at:\par
+---> /tmp/hostpath-demo/message\par
+Here the data is lost if node crash . So we need something more stable to store data . Here comes the picture of PVC and PV\par
+----------------------\par
+\cf3\highlight3 ------------------------------------------------------------------------------------------------\cf4\highlight0\f0\par
+\cf2\b\f1 PV => Persistent Volume\cf4\b0 :\par
+A Persistent Volume (PV) is a cluster-managed storage resource in Kubernetes that exists independently of any Pod. It provides persistent storage that remains available even if a Pod is deleted or restarted.\par
+ Key Features of PV:\par
+\tab Cluster-wide resource: Managed by the cluster \tab administrator.\par
+\tab Independent of Pods: Not tied to the Pod lifecycle.\par
+Where Can a PV Get Its Actual Storage From?\par
+A PV does not store data by itself.\par
+It simply represents storage from an underlying storage system.\par
+1. hostPath (Local node storage)\par
+\tab hostPath:\par
+  \tab path: "/mnt/data"\par
+2. NFS (Network File System)\par
+\tab nfs:\par
+\tab   server: 10.0.0.10\par
+\tab   path: /exports/data\par
+3. CSI Drivers (Container Storage Interface)\par
+\tab csi:\par
+\tab   driver: ebs.csi.aws.com\par
+  \tab volumeHandle: vol-0abcd1234\par
+PV Life Cycle:\par
+1. Provisioning:\par
+\tab Static: Admin manually creates PVs.\par
+\tab Dynamic: Kubernetes automatically provisions PV based on \tab StorageClass when PVC is created.\par
+2. Binding: PVC gets bound to a matching PV.\par
+3. Using: Pod uses PVC, which uses the bound PV.\par
+4. Reclaim Policy: When PVC is deleted, PV can either:\par
+\tab Retain: Keep data for manual recovery.\par
+\tab Recycle: Wipe and reuse.\par
+\tab Delete: Delete the storage resource\par
+---------------------\par
+Example:\par
+apiVersion: v1\par
+kind: PersistentVolume\par
+metadata:\par
+  name: example-pv\par
+spec:\par
+  capacity:\par
+    storage: 1Gi\par
+  accessModes:\par
+    - ReadWriteOnce\par
+  persistentVolumeReclaimPolicy: Retain\par
+  hostPath:\par
+    path: /mnt/data\par
+---------------------------------------------------------\par
+\cf2\b Explanation\cf4\b0 :\par
+Here \line Capacity: Defines the size of storage in the PV (e.g., 1Gi).\par
+\tab There is no strict maximum or minimum capacity limit defined by \tab Kubernetes itself for a Persistent Volume (PV).\par
+\tab Capacity Limits Depend On:\par
+\tab\tab AWS EBS: 1 GiB to 16 TiB\par
+\tab\tab GCP Persistent Disk: 1 GiB to 64 TiB\par
+\tab\tab Azure Disk: 4 GiB to 64 TiB\par
+\par
+AccessModes: Defines how the volume can be mounted by Pods:\par
+\tab ReadWriteOnce (RWO): Mounted read-write by one Pod.\par
+\tab ReadWriteOnce (RWO) means Only one node can mount this volume in read-write mode.Multiple pods on the same node can use it.If attempted from another Node, it will fail \f0\emdash  only one Node can have write access.\f1\par
+\tab ReadOnlyMany (ROX): means it can be read by multiple Pods across multiple Nodes at the same time.All Pods can only read the data \f0\emdash  no write access.Useful for sharing common data or configurations across many Pods.\f1\par
+\tab ReadWriteMany (RWX) means Many nodes/pods can read-write at the same time. Useful for shared storage where multiple Pods need to collaborate or write data.\par
+----------------------------------------\par
+  persistentVolumeReclaimPolicy: Retain\par
+\tab Defines what happens to the storage when PVC is deleted.\par
+Options:\par
+\tab Retain \f3\u8594? Keep the data even after PVC deletion (manual \f4\lang16393\tab\tab\tab        c\f5 leanup needed).\par
+\f4\tab Recycle (deprecated) \f3\u8594? Auto clean folder (not used anymore).\par
+\tab Delete \u8594? Delete the storage (common in cloud volumes).\par
+Your policy: Retain\par
+\tab Data will remain on disk even if PVC or Pod is deleted.\par
+-------------------------------------------------\par
+  storageClassName: manual\par
+\tab Tells Kubernetes which StorageClass this PV belongs to.\par
+\tab A PVC with storageClassName: manual will bind to this PV.\par
+This is used when doing static provisioning.\f1\par
+-------------------------------------------------------------------\par
+Example:\par
+apiVersion: v1\par
+kind: PersistentVolume\par
+metadata:\par
+  name: ebs-pv\par
+spec:\par
+  capacity:\par
+    storage: 5Gi\par
+  volumeMode: Filesystem\par
+  accessModes:\par
+    - ReadWriteOnce\par
+  hostPath:\par
+    path: "/mnt/ebs"\par
+-------------------------------------------\par
+---> kubectl create -f pv.yml\par
+-------------------------------------------\par
+\cf2\b PVC = Persistent Volume Claim:\cf4\b0\par
+A Persistent Volume Claim (PVC) is a user\rquote s request for storage in Kubernetes. It abstracts the storage details, allowing developers to request storage without knowing the underlying infrastructure.\par
+Key Features of PVC\par
+\tab Storage request: Specifies size, access mode, and storage class \tab (optional).\par
+\tab Dynamic or Static binding:\par
+\tab If a matching PV exists, it binds automatically.\par
+\tab If not, a StorageClass can dynamically provision a PV.\par
+\tab Decouples app and storage: Pods use PVCs instead of directly \tab accessing PVs.\par
+\cf2 Example\cf4 :\par
+apiVersion: v1\par
+kind: PersistentVolumeClaim\par
+metadata:\par
+  name: ebs-pvc\par
+spec:\par
+  accessModes:\par
+    - ReadWriteOnce\par
+  resources:\par
+    requests:\par
+      storage: 5Gi\par
+----------------------------------------------\par
+---> kubectl create -f pvc.yml\par
+---> kubectl get pvc\par
+---> kubectl describe pvc ebs-pvc\par
+-------------------------------------------\par
+Pod\par
+Example:\par
+apiVersion: v1\par
+kind: Pod\par
+metadata:\par
+  name: ebs-pod1\par
+spec:\par
+  containers:\par
+  - name: app\par
+    image: busybox\par
+    command: ["/bin/sh", "-c", "echo Hello from PV > /data/hello.txt && sleep 3600"]\par
+    volumeMounts:\par
+    - mountPath: "/data"\par
+      name: storage\par
+  volumes:\par
+  - name: storage\par
+    persistentVolumeClaim:\par
+      claimName: ebs-pvc\par
+-------------------------------------------------\par
+---> kubectl create -f pod.yaml\par
+--------------------------------------------------\par
+\par
+\cf2\b Create volume:\cf4\b0\par
+---> create volume with 5Gi ---> generalpurpose3 or gp2 --- Availability Zone: must be the same as your EC2 instance (e.g., ap-south-1a) --- device name: /dev/sdf --- create and note the volume -id \line\cf2\b Attach it manually \cf4\b0\par
+\cf2 Check if volume attached:\cf4\par
+\tab lsblk\par
+\cf2 Format a new created volume using\par
+\cf4\tab sudo mkfs -t ext4 /dev/xvdf\par
+\cf2 Create a mount directory:\cf4\par
+\tab sudo mkdir /mnt/ebs\par
+\cf2 Mount the volume:\cf4\par
+\tab sudo mount /dev/xvdf /mnt/ebs\par
+\cf2 verify :\cf4\par
+\tab df -h\par
+---------------------------------------------------------------\par
+to check , go to node instance \line lsblk\par
+ls -l /mnt/ebs\par
+cat /mnt/ebs/hello.txt \line\line --------------------------------------------\par
+\cf3\highlight3 ------------------------------------------------------------------------------------------------\cf4\highlight0\par
+\cf0\highlight1\b 6. ConfigMap\cf4\highlight0\b0\f0\lang9\par
+A ConfigMap in Kubernetes is used to inject configuration data (non-sensitive data like application properties, environment variables, URLs, etc.) into your applications without hardcoding them into container images.\par
+Instead of rebuilding an image every time configuration changes, you can update the ConfigMap \emdash  keeping code and configuration separate.\par
+Why Use ConfigMaps?\par
+\f1\lang16393\tab Avoid hardcoding configuration inside application containers.\par
+\tab Can update config without rebuilding Docker images.\par
+\tab Supports injecting data as:\par
+\tab\tab Environment Variables\par
+\tab\tab Command-line Arguments (not recomented)\par
+\tab\tab Configuration Files (via volumes)\par
+---------------------------------------------------\par
+Example 1:\par
+---> nano configmaps.yml\par
+apiVersion: v1\par
+kind: ConfigMap\par
+metadata:\par
+  name: app-config\par
+data:\par
+  DB_HOST: localhost\par
+  DB_PORT: "3306"\par
+-------------------------------\par
+----> kubectl create -f configmaps.yml\par
+----> kubectl get configmap\par
+----> kubectl describe configmap app-config\par
+-------------------------------\par
+How to Use ConfigMap in a Pod:\par
+As Environment Variables\par
+---> nano pod.yml\par
+apiVersion: v1\par
+kind: Pod\par
+metadata:\par
+  name: configmap-pod\par
+spec:\par
+  containers:\par
+  - name: myapp\par
+    image: busybox\par
+    command: [ "/bin/sh", "-c", "env; sleep 3600" ]\par
+    env:\par
+    - name: DB_HOST\par
+      valueFrom:\par
+        configMapKeyRef:\par
+          name: app-config\par
+          key: DB_HOST\par
+    - name: DB_PORT\par
+      valueFrom:\par
+        configMapKeyRef:\par
+          name: app-config\par
+          key: DB_PORT\par
+-----------------------------------------\par
+---> kubectl reate -f pod.yml\par
+---> kubectl exec -it configmap-pod -- env\par
+------------------------------------------\par
+---> kubectl pod1.yml\par
+2. As Volume (Mounted as File):\par
+apiVersion: v1\par
+kind: Pod\par
+metadata:\par
+  name: configmap-pod\par
+spec:\par
+  containers:\par
+  - name: myapp\par
+    image: busybox\par
+    command: [ "/bin/sh", "-c", "cat /config/DB_HOST; sleep 3600" ]\par
+    volumeMounts:\par
+    - name: config-volume\par
+      mountPath: /config\par
+  volumes:\par
+  - name: config-volume\par
+    configMap:\par
+      name: app-config\par
+-------------------------------------------\par
+---> kubectl create -f pod1.yml\par
+---> kubectl exec -it configmap-pod -- cat /config/DB_HOST\par
+---> kubectl get configmaps\par
+---> kubectl describe configmap <name>\par
+---> kubectl delete configmap <name>\par
+-------------------------------------------\par
+\cf3\highlight3 ------------------------------------------------------------------------------------------------\cf4\highlight0\par
+\cf0\highlight1\b 6. Secrets\par
+\highlight6\b0\tab A Secret in Kubernetes is used to store and manage sensitive information securely, such as:\par
+\tab Passwords\par
+\tab SSH Keys\par
+\tab OAuth tokens\par
+\tab TLS certificates\par
+\tab API keys\cf4\f0\lang9\par
+\highlight0\f1\lang16393 Unlike ConfigMaps, which handle non-sensitive config data, Secrets are specifically designed for sensitive data and are:\par
+\tab Base64 encoded\par
+\tab Can be \cf2\b encrypted at rest \cf4\b0 in the Kubernetes cluster (via KMS, \tab etc.)\par
+\tab Restricted via RBAC policies\par
+Encryption at Rest: means\par
+\tab When you create a Secret, Kubernetes stores it in etcd, which is the backend key-value store for cluster data.\par
+By default, these secrets are stored in plain base64 in etcd, which isn't secure if someone accesses etcd directly.\par
+Encryption at Rest means encrypting data when it is stored (on disk, in databases, etc.), to protect it from unauthorized access.\par
+----------------------------------------------\par
+you can encode data with\par
+echo -n 'admin' | base64\par
+echo -n 'pass123' | base64\par
+--------------------------------------------\par
+decode\par
+echo 'YWRtaW4=' | base64 --decode\par
+---------------------------------------------\par
+Create a secret:\par
+Example:\par
+---> nano secrets.yml\par
+apiVersion: v1\par
+kind: Secret\par
+metadata:\par
+  name: db-secret\par
+type: Opaque\par
+data:\par
+  username: YWRtaW4=    # base64 for 'admin'\par
+  password: cGFzczEyMw== # base64 for 'pass123'\par
+----------------------------------------------\par
+---> kubectl apply -f secret.yml\par
+----------------------------------------------\par
+Using Secrets in Pods\tab\tab\par
+---> nano pod.yml\par
+1. As Environment Variables\par
+apiVersion: v1\par
+kind: Pod\par
+metadata:\par
+  name: secret-pod\par
+spec:\par
+  containers:\par
+  - name: myapp\par
+    image: busybox\par
+    command: [ "/bin/sh", "-c", "env; sleep 3600" ]\par
+    env:\par
+    - name: DB_USER\par
+      valueFrom:\par
+        secretKeyRef:\par
+          name: db-secret\par
+          key: username\par
+    - name: DB_PASS\par
+      valueFrom:\par
+        secretKeyRef:\par
+          name: db-secret\par
+          key: password\par
+-----------------------------------\par
+---> kubectl create -f pod.yml\par
+---> kubectl exec -it secret-pod -- env\par
+-------------------------------------\par
+As Mounted Volume\par
+---> nano pod1.yml\par
+apiVersion: v1\par
+kind: Pod\par
+metadata:\par
+  name: secret-pod\par
+spec:\par
+  containers:\par
+  - name: myapp\par
+    image: busybox\par
+    command: [ "/bin/sh", "-c", "cat /etc/secret-volume/username; sleep 3600" ]\par
+    volumeMounts:\par
+    - name: secret-volume\par
+      mountPath: /etc/secret-volume\par
+  volumes:\par
+  - name: secret-volume\par
+    secret:\par
+      secretName: db-secret\par
+------------------------------------\par
+----> kubectl create -f pod1.yml\par
+----> kubectl exec -it secret-pod -- cat /etc/secret-volume/username\par
+----> kubectl get secrets\par
+----> kubectl describe secret <name>a\par
+----> kubectl delete secret <name>\par
+---------------------------------------\par
+\cf3\highlight3 ------------------------------------------------------------------------------------------------\cf4\highlight0\par
+\cf0\highlight1\b 7. DaemonSet\par
+\highlight6\b0\tab A DaemonSet in Kubernetes ensures that a copy of a Pod runs on every node (or a subset of nodes) in the cluster.\par
+\tab When a new node is added ? the pod is automatically deployed on \tab it.\par
+\tab When a node is removed ? the pod is automatically deleted.\par
+\cf4\highlight0\f0\lang9 Why Use a DaemonSet?\par
+\f1\lang16393\tab DaemonSets are ideal when you need per-node tasks or monitoring agents, such as:\par
+\tab Monitoring agents: Prometheus Node Exporter\par
+\tab Log collection agents: fluentd\par
+ Simple DaemonSet YAML\par
+apiVersion: apps/v1\par
+kind: DaemonSet\par
+metadata:\par
+  name: node-exporter\par
+  namespace: default\par
+spec:\par
+  selector:\par
+    matchLabels:\par
+      app: node-exporter\par
+  template:\par
+    metadata:\par
+      labels:\par
+        app: node-exporter\par
+    spec:\par
+      containers:\par
+      - name: node-exporter\par
+        image: prom/node-exporter:latest\par
+        ports:\par
+        - containerPort: 9100\par
+---------------------------------------------\par
+ What is Helm?\par
+\tab Helm is a package manager for Kubernetes, similar to how:\par
+\tab\tab apt is for Ubuntu/Debian,\par
+\tab\tab yum is for CentOS/RedHat.\par
+\tab It helps you define, install, and manage Kubernetes applications easily using pre-configured templates called Charts.\par
+Chart = A package of pre-configured Kubernetes resources (YAML \tab\tab     templates + default configs).\par
+---------------------------------------------\par
+}
+ 
